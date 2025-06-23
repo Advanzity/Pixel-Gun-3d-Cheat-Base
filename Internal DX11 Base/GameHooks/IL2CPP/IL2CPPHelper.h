@@ -16,12 +16,9 @@ namespace IL2CPP {
     struct Domain;
 }
 
+// Forward declaration for Unity types - actual definition will come from BNM library
 namespace Unity {
-    struct Vector3 {
-        float x, y, z;
-        Vector3() : x(0), y(0), z(0) {}
-        Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
-    };
+    struct Vector3;
 }
 
 namespace IL2CPPHelper

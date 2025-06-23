@@ -1,7 +1,11 @@
 #pragma once
-#include "IL2CPP/IL2CPPHelper.h"
 #include "../Engine.h"
 #include "../Features/FeatureManager.h"
+
+// Forward declarations
+namespace IL2CPP {
+    struct Object;
+}
 
 namespace DX11Base {
     namespace GameHooks {
@@ -17,6 +21,7 @@ namespace DX11Base {
         private:
             static void ApplyGameplayFeatures(IL2CPP::Object* obj);
             static void ApplyRenderingFeatures(IL2CPP::Object* obj);
+        };
         };
     }
 }

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IL2CPPHelper.h"
-#include "JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
+#include "IL2CPPCore.h"
 #include <Windows.h>
 
 namespace IL2CPPHelper
@@ -16,7 +16,7 @@ namespace IL2CPPHelper
     {
         if (!initialized)
         {
-            IL2CPP::Initialize(); // Initialize IL2CPP first
+            IL2CPPCore::Initialize(); // Initialize IL2CPP first
             domain = new IL2CPP::Domain();
             initialized = true;
         }

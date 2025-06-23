@@ -266,8 +266,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source.cpp" />
-    <ClCompile Include="Features\FeatureManager.cpp" />
+    <ClCompile Include="Source.cpp" />    <ClCompile Include="Features\FeatureManager.cpp" />
     <ClCompile Include="Features\GameplayFeatures.cpp" />
     <ClCompile Include="Features\ZombieFeatures.cpp" />
     <ClCompile Include="Features\RenderingFeatures.cpp" />
@@ -275,6 +274,8 @@
     <ClCompile Include="Core\Hooking.cpp" />
     <ClCompile Include="GameHooks\HookManager.cpp" />
     <ClCompile Include="GameHooks\WeaponHooks.cpp" />
+    <ClCompile Include="GameHooks\IL2CPP\IL2CPPHelper.cpp" />
+    <ClCompile Include="GameHooks\IL2CPP\IL2CPPCore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hooking\minhook.def" />

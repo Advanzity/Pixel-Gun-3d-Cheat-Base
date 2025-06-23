@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WeaponHooks.h"
+#include "IL2CPP/IL2CPPHelper.h"
 #include "../Features/GameplayFeatures.h"
 #include "../Features/RenderingFeatures.h"
 

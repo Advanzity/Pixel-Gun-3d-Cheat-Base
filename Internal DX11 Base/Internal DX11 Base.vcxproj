@@ -183,7 +183,6 @@
     <ClInclude Include="Core\Hooking.h" />    <ClInclude Include="GameHooks\HookManager.h" />
     <ClInclude Include="GameHooks\WeaponHooks.h" />
     <ClInclude Include="GameHooks\IL2CPP\IL2CPPHelper.h" />
-    <ClInclude Include="GameHooks\IL2CPP\IL2CPPCore.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -271,11 +270,9 @@
     <ClCompile Include="Features\ZombieFeatures.cpp" />
     <ClCompile Include="Features\RenderingFeatures.cpp" />
     <ClCompile Include="Core\D3D11Window.cpp" />
-    <ClCompile Include="Core\Hooking.cpp" />
-    <ClCompile Include="GameHooks\HookManager.cpp" />
+    <ClCompile Include="Core\Hooking.cpp" />    <ClCompile Include="GameHooks\HookManager.cpp" />
     <ClCompile Include="GameHooks\WeaponHooks.cpp" />
     <ClCompile Include="GameHooks\IL2CPP\IL2CPPHelper.cpp" />
-    <ClCompile Include="GameHooks\IL2CPP\IL2CPPCore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hooking\minhook.def" />

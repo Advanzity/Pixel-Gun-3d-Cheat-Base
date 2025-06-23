@@ -3,10 +3,11 @@
 #include "JQ-BNM-main/BNM-IL2CPP/Structures/IL2CPP.hpp"
 #include "JQ-BNM-main/BNM-IL2CPP/Structures/UnityEngine.hpp"
 #include <fstream>
-#include <filesystem>
 #include "../../Framework/imgui_internal.h"
 #include <mutex>
-namespace fs = std::filesystem;
+#include <direct.h>
+#include <io.h>
+// Note: Removed std::filesystem dependency for compatibility
 
 namespace IL2CPPHelper
 {
@@ -366,13 +367,11 @@ namespace IL2CPPHelper
     static IL2CPP::Class* GetClassPtr(const std::string& className)
     {
         return GetClass(className);
-    }
-
-    static void DumpGme(const std::string& outputDir = "ShameDump")
+    }    static void DumpGme(const std::string& outputDir = "ShameDump")
     {
         DomainInitialized();
 
-        fs::create_directories(outputDir);
+        _mkdir(outputDir.c_str()); // Use Windows API instead of std::filesystem
 
         std::vector<std::string> assemblies = {
             "Assembly-CSharp",

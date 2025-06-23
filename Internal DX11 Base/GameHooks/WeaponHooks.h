@@ -18,12 +18,5 @@ namespace DX11Base {
             static void ApplyGameplayFeatures(IL2CPP::Object* obj);
             static void ApplyRenderingFeatures(IL2CPP::Object* obj);
         };
-        
-        // Global hook manager
-        class HookManager {
-        public:
-            static void InitializeAllHooks();
-            static void ShutdownAllHooks();
-        };
     }
 }

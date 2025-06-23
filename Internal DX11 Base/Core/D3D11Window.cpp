@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "pch.h"
 #include "D3D11Window.h"
 #include "../Engine.h"
 #include "../Menu.h"

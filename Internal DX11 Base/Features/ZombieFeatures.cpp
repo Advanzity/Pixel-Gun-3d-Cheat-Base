@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "pch.h"
 #include "ZombieFeatures.h"
 
 namespace DX11Base {

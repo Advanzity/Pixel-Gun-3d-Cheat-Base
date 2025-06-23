@@ -1,5 +1,4 @@
 #pragma once
-#include "WeaponHooks.h"
 
 namespace DX11Base {
     namespace GameHooks {

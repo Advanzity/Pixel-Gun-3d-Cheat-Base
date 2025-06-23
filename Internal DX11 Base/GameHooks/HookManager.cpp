@@ -1,5 +1,6 @@
-#include "../pch.h"
+#include "pch.h"
 #include "HookManager.h"
+#include "WeaponHooks.h"
 
 namespace DX11Base {
     namespace GameHooks {

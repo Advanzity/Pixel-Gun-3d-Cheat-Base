@@ -1,5 +1,7 @@
-#include "../pch.h"
+#include "pch.h"
 #include "WeaponHooks.h"
+#include "../Features/GameplayFeatures.h"
+#include "../Features/RenderingFeatures.h"
 
 namespace DX11Base {
     namespace GameHooks {
@@ -93,19 +95,6 @@ namespace DX11Base {
                 MH_RemoveHook(orWeaponSounds);
                 orWeaponSounds = nullptr;
             }
-        }
-        
-        // Hook Manager Implementation
-        void HookManager::InitializeAllHooks()
-        {
-            WeaponHooks::InitializeHooks();
-            // Add other hook categories here as they're created
-        }
-        
-        void HookManager::ShutdownAllHooks()
-        {
-            WeaponHooks::ShutdownHooks();
-            // Add other hook categories here as they're created
         }
     }
 }

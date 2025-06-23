@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "IL2CPPHelper.h"
+#include "JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
+#include <Windows.h>
 
 namespace IL2CPPHelper
 {
@@ -14,6 +16,7 @@ namespace IL2CPPHelper
     {
         if (!initialized)
         {
+            IL2CPP::Initialize(); // Initialize IL2CPP first
             domain = new IL2CPP::Domain();
             initialized = true;
         }
@@ -253,10 +256,28 @@ namespace IL2CPPHelper
         IL2CPP::Class* klass = GetClass(className);
         if (!klass) return 0;
 
-        IL2CPP::Method method = klass->Method(methodName.c_str(), paramCount);
-        if (!method.instance) return 0;
+        if (paramCount >= 0)
+        {
+            IL2CPP::Method method = klass->Method(methodName.c_str(), paramCount);
+            if (method.instance)
+            {
+                return method.VA();
+            }
+        }
+        else
+        {
+            // Find method by name only (first match)
+            auto methods = klass->Methods();
+            for (auto& method : methods)
+            {
+                if (strcmp(method.Name(), methodName.c_str()) == 0)
+                {
+                    return method.VA();
+                }
+            }
+        }
 
-        return method.VA();
+        return 0;
     }
 
     void DumpClass(const std::string& className)

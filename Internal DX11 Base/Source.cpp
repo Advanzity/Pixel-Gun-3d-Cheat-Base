@@ -2,7 +2,6 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Menu.h"
-#include "GameHooks/IL2CPP/JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
 
 using namespace DX11Base;
 
@@ -37,7 +36,7 @@ DWORD WINAPI MainThread_Initialize(LPVOID dwModule) {
     g_Engine = std::make_unique<Engine>();
     Core::g_D3D11Window->HookD3D();
     Core::g_Hooking->Initialize();
-    IL2CPP::Initialize();
+    // IL2CPP initialization is now handled by the Engine
     // Game hooks are now automatically initialized by the Engine constructor
 
     std::thread WCMUpdate(ClientBGThread);

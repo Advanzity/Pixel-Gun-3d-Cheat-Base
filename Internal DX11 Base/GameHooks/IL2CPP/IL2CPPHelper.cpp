@@ -247,4 +247,142 @@ namespace IL2CPPHelper
 
         outFile.close();
     }
+
+    uint64_t GetMethodAddress(const std::string& className, const std::string& methodName, int paramCount)
+    {
+        IL2CPP::Class* klass = GetClass(className);
+        if (!klass) return 0;
+
+        IL2CPP::Method method = klass->Method(methodName.c_str(), paramCount);
+        if (!method.instance) return 0;
+
+        return method.VA();
+    }
+
+    void DumpClass(const std::string& className)
+    {
+        IL2CPP::Class* klass = GetClass(className);
+        if (!klass)
+        {
+            printf("class %s not found!\n", className.c_str());
+            return;
+        }
+
+        printf("=== Class: %s ===\n", className.c_str());
+        printf("Namespace: %s\n", klass->Namespace());
+
+        printf("\nFields:\n");
+        auto fields = klass->Fields();
+        for (auto& field : fields)
+        {
+            printf("  %s: %s (Offset: 0x%X)\n",
+                field.Type()->Name(),
+                field.Name(),
+                field.Offset());
+        }
+
+        printf("\nMethods:\n");
+        auto methods = klass->Methods();
+        for (auto& method : methods)
+        {
+            printf("  %s %s(", method.ReturnType()->Name(), method.Name());
+            auto params = method.Parameters();
+            for (size_t i = 0; i < params.size(); i++)
+            {
+                printf("%s", params[i].type->Name());
+                if (i < params.size() - 1) printf(", ");
+            }
+            printf(") - VA: 0x%llX\n", method.VA());
+        }
+    }
+
+    bool PatchMethod(const std::string& className, const std::string& methodName, const std::vector<uint8_t>& bytes)
+    {
+        uint64_t methodAddress = GetMethodAddress(className, methodName);
+        if (!methodAddress) return false;
+
+        return PatchBytes((void*)methodAddress, bytes);
+    }
+
+    bool NopMethod(const std::string& className, const std::string& methodName)
+    {
+        std::vector<uint8_t> retInstruction = { 0xC3 };
+        return PatchMethod(className, methodName, retInstruction);
+    }
+
+    bool RestoreNopMethod(const std::string& className, const std::string& methodName)
+    {
+        uint64_t methodAddress = GetMethodAddress(className, methodName);
+        if (!methodAddress) return false;
+
+        std::lock_guard<std::mutex> lock(patchMutex);
+
+        auto it = originalBytesMap.find(methodAddress);
+        if (it == originalBytesMap.end()) return false;
+
+        const auto& original = it->second;
+        DWORD oldProtect;
+        if (!VirtualProtect((void*)methodAddress, original.size(), PAGE_EXECUTE_READWRITE, &oldProtect))
+            return false;
+
+        memcpy((void*)methodAddress, original.data(), original.size());
+
+        VirtualProtect((void*)methodAddress, original.size(), oldProtect, &oldProtect);
+        originalBytesMap.erase(it);
+
+        printf("restored: %s::%s\n", className.c_str(), methodName.c_str());
+        return true;
+    }
+
+    bool NopClassMethods(const std::string& className)
+    {
+        IL2CPP::Class* klass = GetClass(className);
+        if (!klass) {
+            printf("class not found: %s\n", className.c_str());
+            return false;
+        }
+
+        bool success = true;
+        auto methods = klass->Methods();
+        for (auto& method : methods)
+        {
+            uint64_t addr = method.VA();
+            if (addr)
+            {
+                if (!PatchBytes((void*)addr, { 0xC3 }))
+                {
+                    printf("can't NOP method: %s\n", method.Name());
+                    success = false;
+                }
+                else
+                {
+                    printf("NOPd method: %s\n", method.Name());
+                }
+            }
+        }
+
+        return success;
+    }
+
+    IL2CPP::Object* GetMainCamera()
+    {
+        IL2CPP::Class* camera = GetClass("UnityEngine.Camera");
+        if (!camera)
+        {
+            return nullptr;
+        }
+
+        IL2CPP::Method meth = camera->Method("get_main");
+        if (!meth.instance)
+        {
+            return nullptr;
+        }
+
+        return meth.Invoke<IL2CPP::Object*>();
+    }
+
+    IL2CPP::Class* GetClassPtr(const std::string& className)
+    {
+        return GetClass(className);
+    }
 }

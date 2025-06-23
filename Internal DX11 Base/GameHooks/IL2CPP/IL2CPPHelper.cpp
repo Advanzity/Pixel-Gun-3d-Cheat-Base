@@ -1,0 +1,250 @@
+#include "pch.h"
+#include "IL2CPPHelper.h"
+
+namespace IL2CPPHelper
+{
+    // Global variables - definitions
+    std::unordered_map<std::string, IL2CPP::Class*> cachedClasses;
+    IL2CPP::Domain* domain = nullptr;
+    bool initialized = false;
+    std::unordered_map<uint64_t, std::vector<uint8_t>> originalBytesMap;
+    std::mutex patchMutex;
+
+    void DomainInitialized()
+    {
+        if (!initialized)
+        {
+            domain = new IL2CPP::Domain();
+            initialized = true;
+        }
+    }
+
+    IL2CPP::Class* GetClass(const std::string& className)
+    {
+        DomainInitialized();
+
+        auto it = cachedClasses.find(className);
+        if (it != cachedClasses.end())
+            return it->second;
+
+        std::vector<std::string> assemblies = {
+            "Assembly-CSharp",
+            "UnityEngine.CoreModule",
+            "mscorlib",
+            "System",
+            "UnityEngine"
+        };
+
+        for (const auto& assemblyname : assemblies)
+        {
+            IL2CPP::Assembly* assembly = domain->Assembly(assemblyname.c_str());
+            if (assembly)
+            {
+                IL2CPP::Image* image = assembly->Image();
+                if (image)
+                {
+                    std::size_t dotPos = className.find_last_of('.');
+                    if (dotPos != std::string::npos)
+                    {
+                        std::string namespaceName = className.substr(0, dotPos);
+                        std::string simpleName = className.substr(dotPos + 1);
+                        
+                        IL2CPP::Class* cls = image->Class(simpleName.c_str(), namespaceName.c_str());
+                        if (cls)
+                        {
+                            cachedClasses[className] = cls;
+                            return cls;
+                        }
+                    }
+                    else
+                    {
+                        IL2CPP::Class* cls = image->Class(className.c_str());
+                        if (cls)
+                        {
+                            cachedClasses[className] = cls;
+                            return cls;
+                        }
+                    }
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    IL2CPP::Object* CreateInstance(const std::string& className)
+    {
+        IL2CPP::Class* cls = GetClass(className);
+        if (cls)
+        {
+            return cls->New();
+        }
+        return nullptr;
+    }
+
+    Unity::Vector3 WorldToScreen(Unity::Vector3 worldPos)
+    {
+        // Get the main camera
+        IL2CPP::Class* cameraClass = GetClass("UnityEngine.Camera");
+        if (!cameraClass) return Unity::Vector3();
+
+        IL2CPP::Method mainMethod = cameraClass->Method("get_main", 0);
+        if (!mainMethod.instance) return Unity::Vector3();
+
+        IL2CPP::Object* mainCamera = mainMethod.Invoke<IL2CPP::Object*>();
+        if (!mainCamera) return Unity::Vector3();
+
+        // Call WorldToScreenPoint
+        IL2CPP::Method worldToScreenMethod = cameraClass->Method("WorldToScreenPoint", 1);
+        if (!worldToScreenMethod.instance) return Unity::Vector3();
+
+        Unity::Vector3 screenPos = worldToScreenMethod.Invoke<Unity::Vector3>(mainCamera, worldPos);
+        return screenPos;
+    }
+
+    std::vector<IL2CPP::Object*> FindObjectsOfType(const std::string& className)
+    {
+        std::vector<IL2CPP::Object*> objects;
+        
+        try
+        {
+            IL2CPP::Class* objectClass = GetClass("UnityEngine.Object");
+            if (objectClass)
+            {
+                IL2CPP::Class* targetClass = GetClass(className);
+                if (targetClass)
+                {
+                    IL2CPP::Type* targetType = targetClass->Type();
+                    if (targetType)
+                    {
+                        IL2CPP::Method findMethod = objectClass->Method("FindObjectsOfType", 1);
+                        if (findMethod.instance)
+                        {
+                            IL2CPP::Array* result = findMethod.Invoke<IL2CPP::Array*>(targetType);
+                            if (result)
+                            {
+                                int length = result->Length();
+                                for (int i = 0; i < length; i++)
+                                {
+                                    IL2CPP::Object* obj = result->Get<IL2CPP::Object*>(i);
+                                    if (obj) objects.push_back(obj);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (...)
+        {
+            printf("TYPE NOT FOUND: %s\n", className.c_str());
+        }
+
+        return objects;
+    }
+
+    bool PatchBytes(void* address, const std::vector<uint8_t>& bytes)
+    {
+        std::lock_guard<std::mutex> lock(patchMutex);
+
+        uint64_t addr = reinterpret_cast<uint64_t>(address);
+        if (originalBytesMap.find(addr) == originalBytesMap.end())
+        {
+            std::vector<uint8_t> original(bytes.size());
+            memcpy(original.data(), address, bytes.size());
+            originalBytesMap[addr] = original;
+        }
+
+        DWORD oldProtect;
+        if (!VirtualProtect(address, bytes.size(), PAGE_EXECUTE_READWRITE, &oldProtect))
+            return false;
+
+        memcpy(address, bytes.data(), bytes.size());
+
+        DWORD dummy;
+        VirtualProtect(address, bytes.size(), oldProtect, &dummy);
+        return true;
+    }
+
+    bool RestoreBytes(void* address)
+    {
+        std::lock_guard<std::mutex> lock(patchMutex);
+
+        uint64_t addr = reinterpret_cast<uint64_t>(address);
+        auto it = originalBytesMap.find(addr);
+        if (it == originalBytesMap.end())
+            return false;
+
+        const std::vector<uint8_t>& original = it->second;
+        
+        DWORD oldProtect;
+        if (!VirtualProtect(address, original.size(), PAGE_EXECUTE_READWRITE, &oldProtect))
+            return false;
+
+        memcpy(address, original.data(), original.size());
+
+        DWORD dummy;
+        VirtualProtect(address, original.size(), oldProtect, &dummy);
+        
+        originalBytesMap.erase(it);
+        return true;
+    }
+
+    void DumpIL2CPPInfo(const std::string& outputDir)
+    {
+        DomainInitialized();
+        
+        _mkdir(outputDir.c_str()); // Use Windows API instead of std::filesystem
+        
+        std::ofstream outFile(outputDir + "\\IL2CPP_Dump.txt");
+        if (!outFile.is_open()) return;
+
+        outFile << "IL2CPP Information Dump\n";
+        outFile << "========================\n\n";
+
+        auto assemblies = domain->Assemblies();
+        for (IL2CPP::Assembly* assembly : assemblies)
+        {
+            if (!assembly) continue;
+            
+            IL2CPP::Image* image = assembly->Image();
+            if (!image) continue;
+
+            outFile << "Assembly: " << image->Name() << "\n";
+            outFile << "Classes Count: " << image->ClassCount() << "\n";
+            outFile << "----------------------------------------\n";
+
+            auto classes = image->Classes();
+            for (IL2CPP::Class* cls : classes)
+            {
+                if (!cls) continue;
+                
+                outFile << "  Class: " << cls->Namespace() << "::" << cls->Name() << "\n";
+                
+                auto fields = cls->Fields();
+                for (const auto& field : fields)
+                {
+                    outFile << "    Field: " << field.Name() << " (" << field.Type()->Name() << ")\n";
+                }
+                
+                auto methods = cls->Methods();
+                for (const auto& method : methods)
+                {
+                    outFile << "    Method: " << method.Name() << " (";
+                    auto params = method.Parameters();
+                    for (size_t i = 0; i < params.size(); i++)
+                    {
+                        if (i > 0) outFile << ", ";
+                        outFile << params[i].ToString();
+                    }
+                    outFile << ") -> " << method.ReturnType()->Name() << "\n";
+                }
+                
+                outFile << "\n";
+            }
+            outFile << "\n";
+        }
+
+        outFile.close();
+    }
+}

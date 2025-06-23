@@ -11,62 +11,26 @@
 
 namespace IL2CPPHelper
 {
-    static std::unordered_map<std::string, IL2CPP::Class*> cachedClasses;
-    static IL2CPP::Domain* domain = nullptr;
-    static bool initialized = false;
+    // Global variables - declarations only
+    extern std::unordered_map<std::string, IL2CPP::Class*> cachedClasses;
+    extern IL2CPP::Domain* domain;
+    extern bool initialized;
+    extern std::unordered_map<uint64_t, std::vector<uint8_t>> originalBytesMap;
+    extern std::mutex patchMutex;
 
-    static void DomainInitialized()
-    {
-        if (!initialized)
-        {
-            domain = new IL2CPP::Domain();
-            initialized = true;
-        }
-    }
+    // Function declarations
+    void DomainInitialized();
+    IL2CPP::Class* GetClass(const std::string& className);
+    IL2CPP::Object* CreateInstance(const std::string& className);
+    Unity::Vector3 WorldToScreen(Unity::Vector3 worldPos);
+    std::vector<IL2CPP::Object*> FindObjectsOfType(const std::string& className);
+    bool PatchBytes(void* address, const std::vector<uint8_t>& bytes);
+    bool RestoreBytes(void* address);
+    void DumpIL2CPPInfo(const std::string& outputDir);
 
-    static IL2CPP::Class* GetClass(const std::string& className)
-    {
-        DomainInitialized();
-
-        auto it = cachedClasses.find(className);
-        if (it != cachedClasses.end())
-            return it->second;
-
-        std::vector<std::string> assemblies = {
-            "Assembly-CSharp",
-            "UnityEngine.CoreModule",
-            "mscorlib",
-            "System",
-            "UnityEngine"
-        };
-
-        for (const auto& assemblyname : assemblies)
-        {
-            IL2CPP::Assembly* assembly = domain->Assembly(assemblyname.c_str());
-            if (assembly)
-            {
-                IL2CPP::Image* image = assembly->Image();
-                if (image)
-                {
-                    IL2CPP::Class* klass = image->Class(className.c_str());
-                    if (klass)
-                    {
-                        cachedClasses[className] = klass;
-                        return klass;
-                    }
-                }
-            }
-        }
-
-        return nullptr;
-    }
-
-
-
-
-
+    // Template functions must remain in header as inline
     template<typename T>
-    static bool SetMemberValue(const std::string& className, const std::string& fieldName, T value)
+    inline bool SetMemberValue(const std::string& className, const std::string& fieldName, T value)
     {
         IL2CPP::Class* klass = GetClass(className);
         if (!klass) return false;
@@ -79,11 +43,63 @@ namespace IL2CPPHelper
     }
 
     template<typename T>
-    static bool SetMemberValue(IL2CPP::Object* obj, const std::string& fieldName, T value)
+    inline bool SetMemberValue(IL2CPP::Object* obj, const std::string& fieldName, T value)
     {
         if (!obj) return false;
 
         IL2CPP::Field field = obj->Field(fieldName.c_str());
+        if (!field.instance) return false;
+
+        field.SetValue<T>(value);
+        return true;
+    }
+
+    template<typename T>
+    inline T GetMemberValue(const std::string& className, const std::string& fieldName)
+    {
+        IL2CPP::Class* klass = GetClass(className);
+        if (!klass) return T{};
+
+        IL2CPP::Field field = klass->Field(fieldName.c_str());
+        if (!field.instance) return T{};
+
+        return field.GetValue<T>();
+    }
+
+    template<typename T>
+    inline T GetMemberValue(IL2CPP::Object* obj, const std::string& fieldName)
+    {
+        if (!obj) return T{};
+
+        IL2CPP::Field field = obj->Field(fieldName.c_str());
+        if (!field.instance) return T{};
+
+        return field.GetValue<T>(obj);
+    }
+
+    template<typename T, typename... Args>
+    inline T CallMethod(const std::string& className, const std::string& methodName, Args... args)
+    {
+        IL2CPP::Class* klass = GetClass(className);
+        if (!klass) return T{};
+
+        IL2CPP::Method method = klass->Method(methodName.c_str(), sizeof...(args));
+        if (!method.instance) return T{};
+
+        return method.Invoke<T>(args...);
+    }
+
+    template<typename T, typename... Args>
+    inline T CallMethod(IL2CPP::Object* obj, const std::string& methodName, Args... args)
+    {
+        if (!obj) return T{};
+
+        IL2CPP::Method method = obj->Method(methodName.c_str(), sizeof...(args));
+        if (!method.instance) return T{};
+
+        return method.Invoke<T>(obj, args...);
+    }
+}
         if (!field.instance) return false;
 
         field.SetValue<T>(value);

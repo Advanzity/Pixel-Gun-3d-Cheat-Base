@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "IL2CPPHelper.h"
-#include "IL2CPPCore.h"
+// This is the ONLY file that should include BNM headers directly
+#include "JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
 #include <Windows.h>
 
 namespace IL2CPPHelper
@@ -16,7 +17,7 @@ namespace IL2CPPHelper
     {
         if (!initialized)
         {
-            IL2CPPCore::Initialize(); // Initialize IL2CPP first
+            IL2CPP::Initialize(); // Initialize IL2CPP first
             domain = new IL2CPP::Domain();
             initialized = true;
         }

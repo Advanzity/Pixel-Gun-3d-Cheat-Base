@@ -2,8 +2,7 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Menu.h"
-#include "MainPoint/JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
-#include "MainPoint/Hooks.h"
+#include "GameHooks/IL2CPP/JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
 
 using namespace DX11Base;
 
@@ -15,8 +14,8 @@ void ClientBGThread()
 
         if (g_KillSwitch)
         {
-            g_D3D11Window->UnhookD3D();
-            g_Hooking->Shutdown();
+            Core::g_D3D11Window->UnhookD3D();
+            Core::g_Hooking->Shutdown();
             g_Engine.release();     //  releases all created class instances
             g_Running = false;
 
@@ -36,10 +35,10 @@ DWORD WINAPI MainThread_Initialize(LPVOID dwModule) {
     SetConsoleTitleA("Made By 0SD47");
     const HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     g_Engine = std::make_unique<Engine>();
-    g_D3D11Window->HookD3D();
-    g_Hooking->Initialize();
+    Core::g_D3D11Window->HookD3D();
+    Core::g_Hooking->Initialize();
     IL2CPP::Initialize();
-    mainhook();
+    // Game hooks are now automatically initialized by the Engine constructor
 
     std::thread WCMUpdate(ClientBGThread);
 

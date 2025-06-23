@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Menu.h"
+#include "Features/FeatureManager.h"
 ImGuiWindowFlags Flags = 0;
 
 namespace DX11Base {
@@ -21,24 +22,39 @@ namespace DX11Base {
 			{
 				if (ImGui::BeginTabItem("GamePlay"))
 				{
-					ImGui::SmallCheckbox("Bazookaaa", &g_Engine->TestBool);
-					ImGui::SmallCheckbox("Explosive Bullet", &g_Engine->explosivebullet);
-					ImGui::SmallCheckbox("Points Hack", &g_Engine->killpointshack);
-					ImGui::SmallCheckbox("Infinite Ammo", &g_Engine->infammo);
-					ImGui::SmallCheckbox("Magic Bullet", &g_Engine->MagicBullet);
-					ImGui::SmallCheckbox("doublejump", &g_Engine->doublejump);
-					ImGui::SmallCheckbox("ShotGun Mode", &g_Engine->shotgunmode);
-					ImGui::SmallCheckbox("Big Heads", &g_Engine->bighead);
-					ImGui::Spacing();
-					ImGui::SetNextItemWidth(100);
-					ImGui::CustomSliderInt("test", &g_Engine->TestInt, 1, 10, 0, NULL);
+					auto* gameplayFeatures = DX11Base::Features::g_GameplayFeatures.get();
+					if (gameplayFeatures) {
+						ImGui::SmallCheckbox("Bazookaaa", &gameplayFeatures->TestBool);
+						ImGui::SmallCheckbox("Explosive Bullet", &gameplayFeatures->explosivebullet);
+						ImGui::SmallCheckbox("Points Hack", &gameplayFeatures->killpointshack);
+						ImGui::SmallCheckbox("Infinite Ammo", &gameplayFeatures->infammo);
+						ImGui::SmallCheckbox("Magic Bullet", &gameplayFeatures->MagicBullet);
+						ImGui::SmallCheckbox("doublejump", &gameplayFeatures->doublejump);
+						ImGui::SmallCheckbox("ShotGun Mode", &gameplayFeatures->shotgunmode);
+						ImGui::SmallCheckbox("Rapid Fire", &gameplayFeatures->RapidFire);
+						ImGui::Spacing();
+						ImGui::SetNextItemWidth(100);
+						ImGui::CustomSliderInt("test", &gameplayFeatures->TestInt, 1, 10, 0, NULL);
+					}
 
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Visual"))
+				{
+					auto* renderingFeatures = DX11Base::Features::g_RenderingFeatures.get();
+					if (renderingFeatures) {
+						ImGui::SmallCheckbox("Big Heads", &renderingFeatures->bighead);
+					}
 					ImGui::EndTabItem();
 				}
 
 				if (ImGui::BeginTabItem("Zombie"))
 				{
-					ImGui::SmallCheckbox("Anti Zombie Spawn", &g_Engine->AntiZombieSpawn);
+					auto* zombieFeatures = DX11Base::Features::g_ZombieFeatures.get();
+					if (zombieFeatures) {
+						ImGui::SmallCheckbox("Anti Zombie Spawn", &zombieFeatures->AntiZombieSpawn);
+					}
 					ImGui::EndTabItem();
 				}
 

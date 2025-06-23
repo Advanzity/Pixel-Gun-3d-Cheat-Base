@@ -4,7 +4,7 @@
 #include "JQ-BNM-main/BNM-IL2CPP/Structures/UnityEngine.hpp"
 #include <fstream>
 #include <filesystem>
-#include "../Framework/imgui_internal.h"
+#include "../../Framework/imgui_internal.h"
 #include <mutex>
 namespace fs = std::filesystem;
 

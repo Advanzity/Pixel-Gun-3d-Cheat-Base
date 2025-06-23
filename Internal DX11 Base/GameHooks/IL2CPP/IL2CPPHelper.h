@@ -1,13 +1,28 @@
 #pragma once
 #include <unordered_map>
-#include "JQ-BNM-main/BNM-IL2CPP/Structures/IL2CPP.hpp"
-#include "JQ-BNM-main/BNM-IL2CPP/Structures/UnityEngine.hpp"
+#include <vector>
+#include <string>
 #include <fstream>
 #include "../../Framework/imgui_internal.h"
 #include <mutex>
 #include <direct.h>
 #include <io.h>
 // Note: Removed std::filesystem dependency for compatibility
+
+// Forward declarations to avoid including BNM headers in header file
+namespace IL2CPP {
+    struct Object;
+    struct Class;
+    struct Domain;
+}
+
+namespace Unity {
+    struct Vector3 {
+        float x, y, z;
+        Vector3() : x(0), y(0), z(0) {}
+        Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+    };
+}
 
 namespace IL2CPPHelper
 {

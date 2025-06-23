@@ -2,6 +2,8 @@
 #include "IL2CPPHelper.h"
 // This is the ONLY file that should include BNM headers directly
 #include "JQ-BNM-main/BNM-IL2CPP/BNM.hpp"
+#include "JQ-BNM-main/BNM-IL2CPP/Structures/IL2CPP.hpp"
+#include "JQ-BNM-main/BNM-IL2CPP/Structures/UnityEngine.hpp"
 #include <Windows.h>
 
 namespace IL2CPPHelper

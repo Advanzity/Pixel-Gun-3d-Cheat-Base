@@ -226,13 +226,13 @@ namespace IL2CPPHelper
                 outFile << "  Class: " << cls->Namespace() << "::" << cls->Name() << "\n";
                 
                 auto fields = cls->Fields();
-                for (const auto& field : fields)
+                for (auto& field : fields)
                 {
                     outFile << "    Field: " << field.Name() << " (" << field.Type()->Name() << ")\n";
                 }
                 
                 auto methods = cls->Methods();
-                for (const auto& method : methods)
+                for (auto& method : methods)
                 {
                     outFile << "    Method: " << method.Name() << " (";
                     auto params = method.Parameters();

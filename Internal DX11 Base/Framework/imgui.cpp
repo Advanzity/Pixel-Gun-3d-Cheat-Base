@@ -1,3 +1,5 @@
+#include "pch.h"
+
 // dear imgui, v1.91.0 WIP
 // (main code and documentation)
 
@@ -2002,7 +2004,7 @@ const char* ImStrSkipBlank(const char* str)
 #define STB_SPRINTF_IMPLEMENTATION
 #endif
 #ifdef IMGUI_STB_SPRINTF_FILENAME
-#include IMGUI_STB_SPRINTF_FILENAME
+#include "stb_sprintf.h"
 #else
 #include "stb_sprintf.h"
 #endif

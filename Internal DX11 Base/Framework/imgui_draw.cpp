@@ -1,3 +1,5 @@
+#include "pch.h"
+
 // dear imgui, v1.91.0 WIP
 // (drawing and font code)
 
@@ -121,7 +123,7 @@ namespace IMGUI_STB_NAMESPACE
 #define STB_RECT_PACK_IMPLEMENTATION
 #endif
 #ifdef IMGUI_STB_RECT_PACK_FILENAME
-#include IMGUI_STB_RECT_PACK_FILENAME
+#include "imstb_rectpack.h"
 #else
 #include "imstb_rectpack.h"
 #endif
@@ -145,7 +147,7 @@ namespace IMGUI_STB_NAMESPACE
 #define STBTT_DEF extern
 #endif
 #ifdef IMGUI_STB_TRUETYPE_FILENAME
-#include IMGUI_STB_TRUETYPE_FILENAME
+#include "imstb_truetype.h"
 #else
 #include "imstb_truetype.h"
 #endif

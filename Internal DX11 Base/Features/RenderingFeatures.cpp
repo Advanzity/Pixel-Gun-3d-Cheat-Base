@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace Features {
         
+        // Global instance definition
+        std::unique_ptr<RenderingFeatures> g_RenderingFeatures;
+        
         RenderingFeatures::RenderingFeatures() {
             // Initialize default values
             bighead = false;

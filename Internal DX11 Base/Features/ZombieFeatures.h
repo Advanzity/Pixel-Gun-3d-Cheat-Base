@@ -22,7 +22,7 @@ namespace DX11Base {
             void DisableAntiZombieSpawn();
         };
         
-        // Global instance
-        inline std::unique_ptr<ZombieFeatures> g_ZombieFeatures;
+        // Global instance - declaration only
+        extern std::unique_ptr<ZombieFeatures> g_ZombieFeatures;
     }
 }

@@ -5,6 +5,11 @@
 
 namespace DX11Base 
 {
+	// Global variable definitions
+	HMODULE g_hModule{};
+	std::atomic_bool g_Running{};
+	std::atomic_bool g_KillSwitch{false};
+	std::unique_ptr<Engine> g_Engine;
 
 	Engine::Engine()
 	{

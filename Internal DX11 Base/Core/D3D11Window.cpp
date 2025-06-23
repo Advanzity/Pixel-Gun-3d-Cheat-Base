@@ -12,6 +12,9 @@ static uint64_t* MethodsTable{ nullptr };
 namespace DX11Base {
     namespace Core {
         
+        // Global instance definition
+        std::unique_ptr<D3D11Window> g_D3D11Window;
+        
         D3D11Window::D3D11Window() {}
 
         D3D11Window::~D3D11Window() { bInit = false; }

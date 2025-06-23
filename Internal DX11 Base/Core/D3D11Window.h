@@ -60,7 +60,7 @@ namespace DX11Base {
             static HRESULT WINAPI				SwapChain_ResizeBuffers_hook(IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags);
         };
         
-        // Global instance
-        inline std::unique_ptr<D3D11Window> g_D3D11Window;
+        // Global instance - declaration only
+        extern std::unique_ptr<D3D11Window> g_D3D11Window;
     }
 }

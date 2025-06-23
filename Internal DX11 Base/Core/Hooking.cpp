@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace Core {
         
+        // Global instance definition
+        std::unique_ptr<Hooking> g_Hooking;
+        
         Hooking::Hooking()
         {
             MH_Initialize();

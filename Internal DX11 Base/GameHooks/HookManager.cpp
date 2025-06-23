@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace GameHooks {
         
+        // Global hook manager instance definition
+        std::unique_ptr<HookManager> g_HookManager;
+        
         bool HookManager::hooksInitialized = false;
         
         void HookManager::InitializeAllHooks()

@@ -13,7 +13,7 @@ namespace DX11Base {
             static bool hooksInitialized;
         };
         
-        // Global hook manager instance
-        inline std::unique_ptr<HookManager> g_HookManager;
+        // Global hook manager instance - declaration only
+        extern std::unique_ptr<HookManager> g_HookManager;
     }
 }

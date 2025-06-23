@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace Features {
         
+        // Global instance definition
+        std::unique_ptr<ZombieFeatures> g_ZombieFeatures;
+        
         ZombieFeatures::ZombieFeatures() {
             // Initialize default values
             AntiZombieSpawn = false;

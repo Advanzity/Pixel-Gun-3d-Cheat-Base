@@ -22,7 +22,7 @@ namespace DX11Base {
             RenderingFeatures* GetRenderingFeatures() { return g_RenderingFeatures.get(); }
         };
         
-        // Global feature manager instance
-        inline std::unique_ptr<FeatureManager> g_FeatureManager;
+        // Global feature manager instance - declaration only
+        extern std::unique_ptr<FeatureManager> g_FeatureManager;
     }
 }

@@ -172,10 +172,18 @@
     <ClInclude Include="MainPoint\JQ-BNM-main\BNM-IL2CPP\Structures\IL2CPP.hpp" />
     <ClInclude Include="MainPoint\JQ-BNM-main\BNM-IL2CPP\Structures\UnityEngine.hpp" />
     <ClInclude Include="MainPoint\JQ-BNM-main\BNM-IL2CPP\Utils\Dumper.hpp" />
-    <ClInclude Include="MainPoint\JQ-BNM-main\BNM-IL2CPP\Utils\Other.hpp" />
-    <ClInclude Include="MainPoint\IL2CPPHelper.h" />
+    <ClInclude Include="MainPoint\JQ-BNM-main\BNM-IL2CPP\Utils\Other.hpp" />    <ClInclude Include="MainPoint\IL2CPPHelper.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Features\FeatureManager.h" />
+    <ClInclude Include="Features\GameplayFeatures.h" />
+    <ClInclude Include="Features\ZombieFeatures.h" />
+    <ClInclude Include="Features\RenderingFeatures.h" />
+    <ClInclude Include="Core\D3D11Window.h" />
+    <ClInclude Include="Core\Hooking.h" />
+    <ClInclude Include="GameHooks\HookManager.h" />
+    <ClInclude Include="GameHooks\WeaponHooks.h" />
+    <ClInclude Include="GameHooks\IL2CPP\IL2CPPHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -201,6 +209,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Features\FeatureManager.cpp" />
+    <ClCompile Include="Features\GameplayFeatures.cpp" />
+    <ClCompile Include="Features\ZombieFeatures.cpp" />
+    <ClCompile Include="Features\RenderingFeatures.cpp" />
+    <ClCompile Include="Core\D3D11Window.cpp" />
+    <ClCompile Include="Core\Hooking.cpp" />
+    <ClCompile Include="GameHooks\HookManager.cpp" />
+    <ClCompile Include="GameHooks\WeaponHooks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hooking\minhook.def" />

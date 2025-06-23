@@ -22,7 +22,7 @@ namespace DX11Base {
             ~Hooking() noexcept;
         };
         
-        // Global instance
-        inline std::unique_ptr<Hooking> g_Hooking;
+        // Global instance - declaration only
+        extern std::unique_ptr<Hooking> g_Hooking;
     }
 }

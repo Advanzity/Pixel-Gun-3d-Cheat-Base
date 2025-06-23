@@ -46,7 +46,7 @@ namespace DX11Base {
             void DisableKillPointsHack();
         };
         
-        // Global instance
-        inline std::unique_ptr<GameplayFeatures> g_GameplayFeatures;
+        // Global instance - declaration only
+        extern std::unique_ptr<GameplayFeatures> g_GameplayFeatures;
     }
 }

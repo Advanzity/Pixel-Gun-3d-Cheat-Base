@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace Features {
         
+        // Global instance definition
+        std::unique_ptr<GameplayFeatures> g_GameplayFeatures;
+        
         GameplayFeatures::GameplayFeatures() {
             // Initialize default values
             MagicBullet = false;

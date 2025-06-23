@@ -29,5 +29,5 @@ namespace DX11Base
 		struct Il2CppObject;
 		struct Il2CppString;
 	};
-	inline std::unique_ptr<Engine> g_Engine;
+	extern std::unique_ptr<Engine> g_Engine;
 }

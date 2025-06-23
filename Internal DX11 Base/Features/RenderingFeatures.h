@@ -22,7 +22,8 @@ namespace DX11Base {
             void DisableBigHead();
         };
         
-        // Global instance
-        inline std::unique_ptr<RenderingFeatures> g_RenderingFeatures;
+        // Global instance - declaration only
+        extern std::unique_ptr<RenderingFeatures> g_RenderingFeatures;
     }
 }
+

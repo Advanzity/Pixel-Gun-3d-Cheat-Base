@@ -8,9 +8,9 @@ extern DWORD WINAPI MainThread_Initialize(LPVOID dwModule);
 namespace DX11Base
 {
 	using namespace std::chrono_literals;
-	inline HMODULE g_hModule{};
-	inline std::atomic_bool g_Running{};
-	inline std::atomic_bool g_KillSwitch = FALSE;
+	extern HMODULE g_hModule;
+	extern std::atomic_bool g_Running;
+	extern std::atomic_bool g_KillSwitch;
 
 	struct Vector2
 	{

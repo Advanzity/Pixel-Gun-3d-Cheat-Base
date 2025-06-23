@@ -4,6 +4,9 @@
 namespace DX11Base {
     namespace Features {
         
+        // Global feature manager instance definition
+        std::unique_ptr<FeatureManager> g_FeatureManager;
+        
         FeatureManager::FeatureManager() {
             // Initialize all feature modules
             g_GameplayFeatures = std::make_unique<GameplayFeatures>();
